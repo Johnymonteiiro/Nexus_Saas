@@ -1,0 +1,25 @@
+import { {{sentenceCase name}} } from '@prisma/client'
+
+import { {{sentenceCase name}}Interface } from '@/repositories/Prisma/{{name}}s/{{name}}-interface'
+
+interface Create{{sentenceCase name}}UseCaseRequest {
+ // todo
+}
+
+interface Create{{sentenceCase name}}UseCaseResponse {
+{{name}}: {{sentenceCase name}}
+}
+
+export class Create{{sentenceCase name}}UseCase {
+constructor(private {{name}}Repository: {{sentenceCase name}}Interface) {}
+
+async execute({}: Create{{sentenceCase name}}UseCaseRequest): Promise<Create{{sentenceCase name}}UseCaseResponse> {
+ 
+
+    const {{name}} = await this.{{name}}Repository.create({})
+
+    return {
+    {{name}},
+    }
+    }
+    }

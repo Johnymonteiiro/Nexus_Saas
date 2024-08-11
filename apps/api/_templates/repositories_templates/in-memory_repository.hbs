@@ -1,0 +1,79 @@
+import { randomUUID } from 'node:crypto'
+
+import { Prisma, {{sentenceCase name}} } from '@prisma/client'
+
+import { {{sentenceCase name}}Interface } from '../Prisma/{{name}}s/{{name}}-interface'
+
+export class InMemory{{sentenceCase name}}sRepository implements {{sentenceCase name}}Interface {
+public items: {{sentenceCase name}}[] = []
+
+async findById(id: string) {
+const {{name}} = this.items.find((item) => item.id === id)
+
+if (!{{name}}) {
+return null
+}
+
+return {{name}}
+}
+
+async findByEmail(email: string) {
+const {{name}} = this.items.find((item) => item.email === email)
+
+if (!{{name}}) {
+return null
+}
+
+return {{name}}
+}
+
+async findMany(page: number) {
+return this.items.splice((page - 1) * 20, page * 20)
+}
+
+async delete{{sentenceCase name}}(id: string) {
+const index = this.items.findIndex((item) => item.id === id)
+this.items.splice(index, 1)
+
+const {{name}} = this.items.find((item) => item.id === id)
+
+return {{name}} === undefined ? null : {{name}}
+}
+
+async update{{sentenceCase name}}(data: Prisma.{{sentenceCase name}}UpdateInput, id: string) {
+const {{name}} = this.items.find((item) => item.id === id)
+if ({{name}} !== undefined) {
+// update
+}
+
+return {{name}} as {{sentenceCase name}}
+}
+
+async searchMany(query: string, page: number) {
+return this.items
+.filter((item) => item.name.includes(query))
+.slice((page - 1) * 20, page * 20)
+}
+
+async create(data: Prisma.{{sentenceCase name}}CreateInput) {
+const {{name}} = {
+id: randomUUID(),
+name: data.name,
+email: data.email,
+passwordHash: data.passwordHash,
+description: data.description ?? null,
+profession: data.profession ?? null,
+position: data.position ?? null,
+phoneNumber: data.phoneNumber ?? null,
+imageUrl: data.imageUrl ?? null,
+status_profile: data.status_profile ?? null,
+createdAt: new Date(),
+updatedAt: new Date(),
+role: [],
+}
+
+this.items.push({{name}})
+
+return {{name}}
+}
+}

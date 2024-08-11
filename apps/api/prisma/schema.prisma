@@ -1,0 +1,273 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  created_at    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  description    String?
+  profession     String?
+  position       String?
+  phoneNumber    String?        @map("phone_number")
+  imageUrl       String?        @map("image_url")
+  status_profile StatusProfile? @default(ACTIVE)
+
+  role               Role[]         @default([MEMBER])
+  accounts           Account[]
+  tokens             Token[]
+  owns_organizations Organization[]
+  invites            Invite[]
+  members_on         Member[]
+  owns_projects      Project[]
+  owns_tasks         Tasks[]
+  owns_subtasks      SubTasks[]
+
+  @@map("users")
+}
+
+enum TokkenType {
+  PASSWORD_RECOVERY
+}
+
+model Token {
+  id        String     @id @default(uuid())
+  type      TokkenType
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+
+  @@map("tokkens")
+}
+
+enum AccountProvider {
+  GITHUB
+}
+
+model Account {
+  id                String          @id @default(uuid())
+  provider          AccountProvider
+  providerAccountId String          @unique @map("provider_account_id")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+
+  @@unique([provider, userId]) //one account github
+  @@map("accounts")
+}
+
+model Invite {
+  id        String   @id @default(uuid())
+  email     String
+  created_at DateTime @default(now()) @map("created_at")
+  role      Role     @map("role")
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  organizationId String       @map("organization_id")
+
+  author User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String? @unique
+
+  @@unique([email, organizationId]) //no the same email
+  @@index([email]) //fast search for
+  @@map("invites")
+}
+
+model Organization {
+  id                        String  @id @default(uuid())
+  name                      String
+  slug                      String  @unique
+  domain                    String? @unique
+  description               String?
+  shouldAttachUsersByDomain Boolean @default(false) @map("should_attrach_users_by_domain")
+  imageUrl                  String? @map("image_url")
+
+  created_at DateTime  @default(now())
+  updatedAt  DateTime? @updatedAt @map("updated_at")
+
+  projects Project[]
+  members  Member[]
+  invites  Invite[]
+
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  ownerId String @unique
+
+  @@map("organizations")
+}
+
+model Member {
+  id   String @id @default(uuid())
+  role Role   @default(MEMBER)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+
+  Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  organizationId String
+
+  @@unique([organizationId, userId]) //not the same usar for the organization
+  @@map("members")
+}
+
+model Client {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  password_hash String
+  created_at    DateTime @default(now())
+
+  description    String?
+  profession     String?
+  position       String?
+  phone_number   String?
+  image          String?
+  status_profile StatusProfile? @default(ACTIVE)
+  role           Role           @default(CUSTOMER)
+
+  my_projects Project[]
+  my_budgets  Budget[]
+
+  @@map("clients")
+}
+
+model Project {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  type        String?
+  start_at    DateTime
+  finished_at DateTime
+  progress    Decimal   @default(0)
+  done        Boolean   @default(false)
+  created_at  DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+  imageUrl    String?   @map("image_url")
+
+  StatusProject   StatusProject?   @default(BEGIN)
+  PriorityProject PriorityProject? @default(MEDDIUM)
+
+  Tasks  Tasks[]
+  Budget Budget[]
+
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  ownerId String @unique
+
+  client_owner Client @relation(fields: [client_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  client_id    String @unique
+
+  Organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  organizationId String?
+
+  @@unique([name, ownerId, client_id, organizationId])
+  @@map("project")
+}
+
+model Tasks {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  start_at    DateTime
+  finished_at DateTime
+  progress    Decimal   @default(0)
+  done        Boolean   @default(false)
+  created_at  DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+
+  StatusProject   StatusProject?   @default(BEGIN)
+  PriorityProject PriorityProject? @default(MEDDIUM)
+  SubTasks        SubTasks[]
+
+  project    Project @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  project_id String  @unique
+
+  owner  User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+
+  @@unique([name, userId, project_id])
+  @@map("tasks")
+}
+
+model SubTasks {
+  id             String    @id @default(uuid())
+  name           String    @unique
+  description    String?
+  estimated_time DateTime
+  progress       Decimal   @default(0)
+  done           Boolean   @default(false)
+  created_at     DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt @map("updated_at")
+
+  StatusProject   StatusProject?   @default(BEGIN)
+  PriorityProject PriorityProject? @default(MEDDIUM)
+
+  tasks    Tasks  @relation(fields: [tasks_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tasks_id String @unique
+
+  owner  User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+
+  @@unique([name, userId, tasks_id]) // no repetitive subtasks
+  @@map("sub_tasks")
+}
+
+model Budget {
+  id            String    @id @default(uuid())
+  initial_value Decimal
+  final_value   Decimal
+  parcel_number Int
+  created_at    DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt @map("updated_at")
+
+  client       Client        @relation(fields: [client_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  client_id    String        @unique
+  project      Project       @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  project_id   String        @unique
+  StatusBudget StatusBudget?
+
+  @@map("budget")
+}
+
+enum StatusBudget {
+  INPROGRESS
+  PENDENG
+  DONE
+}
+
+enum StatusProject {
+  BEGIN
+  INPROGRESS
+  PENDING
+  DONE
+}
+
+enum PriorityProject {
+  URGENT
+  IMPORTANT
+  MEDDIUM
+  LOW
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+  MANAGER
+  MEMBER
+  BILLING
+}
+
+enum StatusProfile {
+  ACTIVE
+  INACTIVE
+  PENDING
+}

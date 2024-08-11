@@ -1,0 +1,7 @@
+{
+  "name": "@nexus/tsconfig",
+  "version": "0.0.0",
+  "private": true,
+  "files": ["library.js"],
+  "license": "MIT"
+}

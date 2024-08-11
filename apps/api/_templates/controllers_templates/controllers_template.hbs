@@ -1,0 +1,20 @@
+import { FastifyReply, FastifyRequest } from 'fastify'
+
+import { Make{{sentenceCase name}}UseCase } from '@/use-cases/factories/create-{{name}}-factory-function/make-{{name}}-factory'
+
+export async function create{{sentenceCase name}}(request: FastifyRequest, reply: FastifyReply) {
+
+
+  try {
+    const {{name}}UseCase = Make{{sentenceCase name}}UseCase()
+    await {{name}}UseCase.execute({ }) // executing the methods of users use-case
+  } catch (err) {
+    if (err) {
+      reply.status(409).send({})
+    }
+
+    throw err
+  }
+
+  return reply.status(201).send()
+}

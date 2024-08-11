@@ -1,0 +1,7 @@
+import { FastifyInstance } from 'fastify'
+
+import { create{{sentenceCase name}} } from './create-{{name}}'
+
+export async function {{name}}Routes(app: FastifyInstance) {
+  app.post('/{{name}}', create{{sentenceCase name}})
+}

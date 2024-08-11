@@ -1,0 +1,86 @@
+import { Prisma } from '@prisma/client'
+
+import { prisma } from '@/lib/prisma'
+
+import { {{sentenceCase name}}Interface } from './{{name}}-interface'
+
+export class Prisma{{sentenceCase name}}Repository implements {{sentenceCase name}}Interface {
+  async findMany(page: number) {
+    const {{name}}s = await prisma.{{name}}.findMany({
+      where: {},
+      orderBy: {
+        createdAt: 'desc',
+      },
+
+      take: 20,
+      skip: (page - 1) * 20,
+    })
+
+    return {{name}}s
+  }
+
+  async findById(id: string) {
+    const {{name}} = await prisma.{{name}}.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    return {{name}}
+  }
+
+  async findByEmail(email: string) {
+    const {{name}} = await prisma.{{name}}.findUnique({
+      where: { email },
+    })
+
+    return {{name}}
+  }
+
+  async update{{sentenceCase name}}(data: Prisma.{{sentenceCase name}}UpdateInput, id: string) {
+    const {{name}} = await prisma.{{name}}.update({
+      where: {
+        id,
+      },
+      data,
+    })
+
+    return {{name}}
+  }
+
+  async delete{{sentenceCase name}}(id: string) {
+    const {{name}} = prisma.{{name}}.delete({
+      where: {
+        id,
+      },
+    })
+
+    return {{name}}
+  }
+
+  async searchMany(query: string, page: number) {
+    const {{name}}s = prisma.{{name}}.findMany({
+      where: {
+        name: {
+          contains: query,
+        },
+      },
+      take: 20,
+      skip: (page - 1) * 20,
+    })
+
+    if ((await {{name}}s).length < 0) {
+     // TODO:
+    }
+
+    return {{name}}s
+  }
+
+  async create(data: Prisma.{{sentenceCase name}}CreateInput) {
+    const {{name}}s = await prisma.{{name}}.create({
+      data,
+    })
+
+    return {{name}}s
+  }
+}

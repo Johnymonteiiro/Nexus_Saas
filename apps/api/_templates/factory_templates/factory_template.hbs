@@ -1,0 +1,9 @@
+import { Prisma{{sentenceCase name}}Repository } from '@/repositories/Prisma/{{name}}s/prisma-{{name}}-repository'
+import { Create{{sentenceCase name}}UseCase } from '@/use-cases/{{name}}-use-case/create-{{name}}-use-case'
+
+export function Make{{sentenceCase name}}UseCase() {
+  const {{name}}Repository = new Prisma{{sentenceCase name}}Repository() // instance the repository
+  const {{name}}UseCase = new Create{{sentenceCase name}}UseCase({{name}}Repository) // instance the users use-case class
+
+  return {{name}}UseCase
+}

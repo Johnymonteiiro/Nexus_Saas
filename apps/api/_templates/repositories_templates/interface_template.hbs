@@ -1,0 +1,11 @@
+import { Prisma, {{sentenceCase name}} } from '@prisma/client'
+
+export interface {{sentenceCase name}}Interface {
+  create(data: Prisma.{{sentenceCase name}}CreateInput): Promise<{{sentenceCase name}}>
+  findByEmail(email: string): Promise<{{sentenceCase name}} | null>
+  findById(id: string): Promise<{{sentenceCase name}} | null>
+  delete{{sentenceCase name}}(id: string): Promise<{{sentenceCase name}} | null>
+  update{{sentenceCase name}}(data: Prisma.{{sentenceCase name}}UpdateInput, id: string): Promise<{{sentenceCase name}}>
+  searchMany(query: string, page: number): Promise<{{sentenceCase name}}[]>
+  findMany(page: number): Promise<{{sentenceCase name}}[] | null>
+}

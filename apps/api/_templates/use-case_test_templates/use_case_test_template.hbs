@@ -1,0 +1,21 @@
+import { compare } from 'bcryptjs'
+import { beforeEach, describe, expect, it } from 'vitest'
+
+import { InMemory{{sentenceCase name}}sRepository } from '@/repositories/In-memory-repository/in-memory-{{name}}-repository'
+
+import { Create{{sentenceCase name}}UseCase } from '../create-{{name}}-use-case'
+
+let {{name}}Repository: InMemory{{sentenceCase name}}sRepository
+let sut: Create{{sentenceCase name}}UseCase
+
+describe('Create {{name}}s', () => {
+  beforeEach(() => {
+    {{name}}Repository = new InMemory{{sentenceCase name}}sRepository()
+    sut = new Create{{sentenceCase name}}UseCase({{name}}Repository)
+  })
+
+  it('Should be able to create a suer', async () => {
+    const { {{name}} } = await sut.execute({})
+  })
+  
+})

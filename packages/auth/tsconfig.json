@@ -1,0 +1,4 @@
+{
+    "extends": "@nexus/tsconfig/library.json",
+    "include": ["src/**/*"]
+}
