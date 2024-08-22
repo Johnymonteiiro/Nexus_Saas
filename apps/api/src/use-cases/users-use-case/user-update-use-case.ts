@@ -1,4 +1,4 @@
-import { Role, StatusProfile, User } from '@prisma/client'
+import { Role, User } from '@prisma/client'
 
 import { UserInterface } from '@/repositories/Prisma/users/user-interface'
 
@@ -11,8 +11,7 @@ interface UpdateUserCaseRequest {
   position?: string
   phoneNumber?: string
   imageUrl?: string
-  statusProfile?: StatusProfile
-  role?: Role[]
+  globalRole: Role
 }
 
 interface UpdateUserCaseResponse {
@@ -29,8 +28,7 @@ export class UpdateUserCase {
     phoneNumber,
     position,
     profession,
-    role,
-    statusProfile,
+    globalRole,
   }: UpdateUserCaseRequest): Promise<UpdateUserCaseResponse> {
     const data = {
       description,
@@ -38,8 +36,7 @@ export class UpdateUserCase {
       phoneNumber,
       position,
       profession,
-      role,
-      statusProfile,
+      globalRole,
     }
 
     const userNotExist = await this.userRepository.findById(userId)

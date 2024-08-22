@@ -12,17 +12,16 @@ model User {
   name         String
   email        String   @unique
   passwordHash String   @map("password_hash")
-  created_at    DateTime @default(now()) @map("created_at")
+  created_at   DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  description    String?
-  profession     String?
-  position       String?
-  phoneNumber    String?        @map("phone_number")
-  imageUrl       String?        @map("image_url")
-  status_profile StatusProfile? @default(ACTIVE)
+  description String?
+  profession  String?
+  position    String?
+  phoneNumber String? @map("phone_number")
+  imageUrl    String? @map("image_url")
+  globalRole  Role    @default(USER)
 
-  role               Role[]         @default([MEMBER])
   accounts           Account[]
   tokens             Token[]
   owns_organizations Organization[]
@@ -46,7 +45,7 @@ model Token {
   updatedAt DateTime   @updatedAt @map("updated_at")
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String @unique
+  userId String
 
   @@map("tokkens")
 }
@@ -61,23 +60,23 @@ model Account {
   providerAccountId String          @unique @map("provider_account_id")
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String @unique
+  userId String
 
   @@unique([provider, userId]) //one account github
   @@map("accounts")
 }
 
 model Invite {
-  id        String   @id @default(uuid())
-  email     String
+  id         String   @id @default(uuid())
+  email      String
   created_at DateTime @default(now()) @map("created_at")
-  role      Role     @map("role")
+  role       Role     @map("role")
 
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   organizationId String       @map("organization_id")
 
   author User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String? @unique
+  userId String?
 
   @@unique([email, organizationId]) //no the same email
   @@index([email]) //fast search for
@@ -101,22 +100,23 @@ model Organization {
   invites  Invite[]
 
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  ownerId String @unique
+  ownerId String
 
   @@map("organizations")
 }
 
 model Member {
-  id   String @id @default(uuid())
-  role Role   @default(MEMBER)
+  id             String         @id @default(uuid())
+  role           Role           @default(MEMBER)
+  status_profile StatusProfile? @default(ACTIVE)
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String @unique
+  userId String
 
   Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   organizationId String
 
-  @@unique([organizationId, userId]) //not the same usar for the organization
+  @@unique([organizationId, userId]) //not the same user for the organization
   @@map("members")
 }
 
@@ -161,10 +161,10 @@ model Project {
   Budget Budget[]
 
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  ownerId String @unique
+  ownerId String
 
   client_owner Client @relation(fields: [client_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  client_id    String @unique
+  client_id    String
 
   Organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   organizationId String?
@@ -189,10 +189,10 @@ model Tasks {
   SubTasks        SubTasks[]
 
   project    Project @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  project_id String  @unique
+  project_id String
 
   owner  User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String @unique
+  userId String
 
   @@unique([name, userId, project_id])
   @@map("tasks")
@@ -212,10 +212,10 @@ model SubTasks {
   PriorityProject PriorityProject? @default(MEDDIUM)
 
   tasks    Tasks  @relation(fields: [tasks_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  tasks_id String @unique
+  tasks_id String
 
   owner  User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String @unique
+  userId String
 
   @@unique([name, userId, tasks_id]) // no repetitive subtasks
   @@map("sub_tasks")
@@ -230,9 +230,9 @@ model Budget {
   updatedAt     DateTime? @updatedAt @map("updated_at")
 
   client       Client        @relation(fields: [client_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  client_id    String        @unique
+  client_id    String
   project      Project       @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  project_id   String        @unique
+  project_id   String
   StatusBudget StatusBudget?
 
   @@map("budget")
@@ -260,9 +260,10 @@ enum PriorityProject {
 
 enum Role {
   ADMIN
-  CUSTOMER
   MANAGER
   MEMBER
+  CUSTOMER
+  USER
   BILLING
 }
 

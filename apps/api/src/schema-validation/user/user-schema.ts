@@ -1,10 +1,11 @@
-import { Role, StatusProfile } from '@prisma/client'
+import { Role } from '@prisma/client'
 import { z } from 'zod'
 
 export const createUserBodySchema = z.object({
   name: z.string(),
   email: z.string().email(),
   password: z.string().min(6),
+  globalRole: z.nativeEnum(Role),
 })
 
 export const profileBodySchema = z.object({
@@ -13,8 +14,7 @@ export const profileBodySchema = z.object({
   position: z.optional(z.string()),
   phoneNumber: z.optional(z.string()),
   imageUrl: z.optional(z.string().url()),
-  statusProfile: z.optional(z.nativeEnum(StatusProfile)),
-  role: z.optional(z.array(z.nativeEnum(Role))),
+  globalRole: z.nativeEnum(Role),
 })
 export const profileUserParamsSchema = z.object({
   userId: z.string().uuid(),

@@ -12,11 +12,10 @@ export async function updateUser(request: FastifyRequest, reply: FastifyReply) {
   const {
     description,
     imageUrl,
+    globalRole,
     phoneNumber,
     position,
     profession,
-    role,
-    statusProfile,
   } = profileBodySchema.parse(request.body)
 
   try {
@@ -28,8 +27,7 @@ export async function updateUser(request: FastifyRequest, reply: FastifyReply) {
       phoneNumber,
       position,
       profession,
-      role,
-      statusProfile,
+      globalRole,
     })
 
     return reply.status(201).send({ message: 'User updated sucess!' })

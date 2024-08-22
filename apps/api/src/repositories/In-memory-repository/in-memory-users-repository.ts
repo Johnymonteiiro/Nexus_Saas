@@ -66,10 +66,8 @@ export class InMemoryUsersRepository implements UserInterface {
       position: data.position ?? null,
       phoneNumber: data.phoneNumber ?? null,
       imageUrl: data.imageUrl ?? null,
-      status_profile: data.status_profile ?? null,
       created_at: new Date(),
       updatedAt: new Date(),
-      role: [],
     }
 
     this.items.push(user)

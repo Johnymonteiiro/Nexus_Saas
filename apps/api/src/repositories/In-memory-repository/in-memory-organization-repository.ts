@@ -70,4 +70,16 @@ export class InMemoryOrganizationsRepository implements OrganizationInterface {
 
     return organization
   }
+
+  async findBySlug(slug: string) {
+    const organization = this.items.find(
+      (organization) => organization.slug === slug,
+    )
+
+    if (!organization) {
+      return null
+    }
+
+    return organization
+  }
 }

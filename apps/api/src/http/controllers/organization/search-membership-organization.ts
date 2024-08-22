@@ -1,24 +1,29 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 
-import { getMembershipOrganizationParamsSchema } from '@/schema-validation/organization/organization-schema'
+import { searchMembershipOrganizationParamsSchema } from '@/schema-validation/organization/organization-schema'
+import { MemberNotExistError } from '@/use-cases/errors/member-not-exist-error'
 import { OrganizationNotFoundError } from '@/use-cases/errors/organization-not-found-error'
-import { MakeGetMembersUseCase } from '@/use-cases/factories/members-factory-function/make-get-members-factory'
+import { MakeSearchMemberUseCase } from '@/use-cases/factories/members-factory-function/make-search-member-factory'
 
-export async function GetMembershipOrganization(
+export async function SearchMembershipOrganization(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
-  const { slug, page } = getMembershipOrganizationParamsSchema.parse(
+  const { slug, query } = searchMembershipOrganizationParamsSchema.parse(
     request.params,
   )
 
   try {
-    const getMembersUseCase = MakeGetMembersUseCase()
+    const getMembersUseCase = MakeSearchMemberUseCase()
 
     const { members: membersLists } = await getMembersUseCase.execute({
-      page,
+      query,
       slug,
     })
+
+    if (membersLists.length <= 0) {
+      return reply.status(409).send({ message: 'User not found' })
+    }
 
     const members = membersLists.map((member) => {
       return {
@@ -40,7 +45,10 @@ export async function GetMembershipOrganization(
       if (err instanceof OrganizationNotFoundError) {
         reply.status(409).send({ message: err.message })
       }
-      throw err
+    } else {
+      if (err instanceof MemberNotExistError) {
+        reply.status(409).send({ message: err.message })
+      }
     }
     throw err
   }

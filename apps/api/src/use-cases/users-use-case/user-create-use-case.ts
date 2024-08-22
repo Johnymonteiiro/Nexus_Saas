@@ -1,4 +1,4 @@
-import { StatusProfile, User } from '@prisma/client'
+import { Role, User } from '@prisma/client'
 import { hash } from 'bcryptjs'
 
 import { prisma } from '@/lib/prisma'
@@ -10,12 +10,7 @@ interface CreateUserCaseRequest {
   name: string
   email: string
   password: string
-  description?: string
-  profession?: string
-  position?: string
-  phone_number?: string
-  image?: string
-  status_profile?: StatusProfile
+  globalRole: Role
 }
 
 interface CreateUserCaseResponse {
@@ -29,6 +24,7 @@ export class CreateUserUseCase {
     name,
     email,
     password,
+    globalRole,
   }: CreateUserCaseRequest): Promise<CreateUserCaseResponse> {
     const passwordHash = await hash(password, 6)
     const userWithSameEmail = await this.userRepository.findByEmail(email)
@@ -50,6 +46,7 @@ export class CreateUserUseCase {
       name,
       email,
       passwordHash,
+      globalRole,
       members_on: autoJoinOrganization
         ? {
             create: {

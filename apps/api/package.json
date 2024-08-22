@@ -21,6 +21,7 @@
     "@nexus/eslint-config": "workspace:*",
     "@nexus/prettier": "workspace:*",
     "@nexus/tsconfig": "workspace:*",
+    "@nexus/auth": "workspace:*",
     "@prisma/client": "5.13.0",
     "@types/node": "^20.12.7",
     "bcryptjs": "^2.4.3",

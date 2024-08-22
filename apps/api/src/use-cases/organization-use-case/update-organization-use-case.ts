@@ -27,7 +27,7 @@ export class UpdateOrganizationUseCase {
     description,
     imageUrl,
   }: UpdateOrganizationUseCaseRequest): Promise<UpdateOrganizationUseCaseResponse> {
-    const slug = name ? createSlug(name) : undefined
+    const slug = name ? createSlug(name) : undefined // Remover depois o slug
 
     const data = {
       name,

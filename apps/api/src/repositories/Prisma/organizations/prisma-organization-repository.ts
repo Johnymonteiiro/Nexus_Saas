@@ -13,7 +13,7 @@ export class PrismaOrganizationRepository implements OrganizationInterface {
     return organizations
   }
 
-  findByDomain(domain: string) {
+  async findByDomain(domain: string) {
     const organization = prisma.organization.findFirst({
       where: {
         domain,
@@ -28,7 +28,22 @@ export class PrismaOrganizationRepository implements OrganizationInterface {
     return organization
   }
 
-  updateOrganization(data: Prisma.OrganizationUpdateInput, id: string) {
+  async findBySlug(slug: string) {
+    const organization = prisma.organization.findFirst({
+      where: {
+        slug,
+      },
+      include: {
+        members: true,
+        projects: true,
+        invites: true,
+      },
+    })
+
+    return organization
+  }
+
+  async updateOrganization(data: Prisma.OrganizationUpdateInput, id: string) {
     const organization = prisma.organization.update({
       where: {
         id,
@@ -39,7 +54,7 @@ export class PrismaOrganizationRepository implements OrganizationInterface {
     return organization
   }
 
-  deleteOrganization(id: string) {
+  async deleteOrganization(id: string) {
     const organization = prisma.organization.delete({
       where: {
         id,

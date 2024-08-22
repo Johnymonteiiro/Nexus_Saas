@@ -6,30 +6,25 @@ import { Roles } from '../subjects/roles'
 
 // Builder ==> tell the users what permition have
 // AbilityBuilder ==> is generic and builder type
-// AppAbility ==> let us know what hind of ability has got our app
+// AppAbility ==> let us know what kind of ability has got our app
 
 type PermissiosByRoles = (
   user: User,
   builder: AbilityBuilder<AppAbility>,
 ) => void
 
-export const permissios: Record<Roles, PermissiosByRoles> = {
+export const permissions: Record<Roles, PermissiosByRoles> = {
   ADMIN: (user, { can, cannot }) => {
     can('manage', 'all')
     cannot(['create', 'update'], 'Profile')
     can(['create', 'update'], 'Profile', {
       ownerId: { $eq: user.id },
     })
-
-    cannot(['transfear_ownership', 'update'], 'Organization')
-    can(['transfear_ownership', 'update', 'delete'], 'Organization', {
-      ownerId: { $eq: user.id },
-    })
   },
-  MEMBER: (user, { can }) => {
-    can('get', 'User')
+  MEMBER: (user, { can, cannot }) => {
+    can('get', ['Customer', 'User', 'Member'])
+    cannot(['delete', 'create'], ['Customer', 'User', 'Member'])
 
-    can(['get', 'update'], 'Customer')
     can(['update', 'create'], 'Profile', {
       ownerId: { $eq: user.id },
     })
@@ -48,6 +43,7 @@ export const permissios: Record<Roles, PermissiosByRoles> = {
       ownerId: { $eq: user.id },
     })
     can('manage', 'Project')
+    can('manage', 'Member')
     can('manage', 'Invite')
     cannot(['transfear_ownership', 'update'], 'Organization')
     can(['transfear_ownership', 'update', 'delete'], 'Organization', {

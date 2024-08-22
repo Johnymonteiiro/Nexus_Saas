@@ -15,7 +15,7 @@ describe('Create users', () => {
     sut = new CreateUserUseCase(userRepository)
   })
 
-  it('Should be able to create a suer', async () => {
+  it('Should be able to create a user', async () => {
     const { user } = await sut.execute({
       name: 'Jhon Doe',
       email: 'john@gmail.com.br',
