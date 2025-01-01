@@ -5,7 +5,7 @@ export function MakeCreateOrganizationUseCase() {
   const organizationRepository = new PrismaOrganizationRepository() // instance the repository
   const createOrganizationUseCase = new CreateOrganizationUseCase(
     organizationRepository,
-  ) // instance the users use-case class
+  )
 
   return createOrganizationUseCase
 }

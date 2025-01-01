@@ -1,6 +1,7 @@
-import { Organization } from '@prisma/client'
-
-import { OrganizationInterface } from '@/repositories/Prisma/organizations/organization-interface'
+import {
+  DeleteOrganizationArchived,
+  OrganizationInterface,
+} from '@/repositories/Prisma/organizations/organization-interface'
 
 import { OrganizationNotFoundError } from '../errors/organization-not-found-error'
 
@@ -10,7 +11,7 @@ interface DeleteOrganizationUseCaseRequest {
 }
 
 interface DeleteOrganizationUseCaseResponse {
-  organization: Organization | null
+  organization: DeleteOrganizationArchived | null
 }
 
 export class DeleteOrganizationUseCase {
@@ -20,12 +21,14 @@ export class DeleteOrganizationUseCase {
     organizationId,
     domain,
   }: DeleteOrganizationUseCaseRequest): Promise<DeleteOrganizationUseCaseResponse> {
-    if (domain) {
-      const organizationExist = await this.userRepository.findByDomain(domain)
+    const organizationExist = await this.userRepository.findByDomain(domain)
 
-      if (!organizationExist) {
-        throw new OrganizationNotFoundError()
-      }
+    if (!organizationExist) {
+      throw new OrganizationNotFoundError()
+    }
+
+    if (organizationExist.status === 'ACTIVE') {
+      throw new Error('This organization is not Archived')
     }
 
     const organization =

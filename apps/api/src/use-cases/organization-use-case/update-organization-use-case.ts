@@ -1,7 +1,6 @@
 import { Organization } from '@prisma/client'
 
 import { OrganizationInterface } from '@/repositories/Prisma/organizations/organization-interface'
-import { createSlug } from '@/tools/create-slug'
 
 interface UpdateOrganizationUseCaseRequest {
   organizationId: string
@@ -27,11 +26,10 @@ export class UpdateOrganizationUseCase {
     description,
     imageUrl,
   }: UpdateOrganizationUseCaseRequest): Promise<UpdateOrganizationUseCaseResponse> {
-    const slug = name ? createSlug(name) : undefined // Remover depois o slug
+    // const slug = name ? createSlug(name) : undefined // Remover depois o slug
 
     const data = {
       name,
-      slug,
       domain,
       shouldAttachUsersByDomain,
       description,

@@ -1,4 +1,11 @@
-import { Member, Organization, Prisma, User } from '@prisma/client'
+import {
+  Member,
+  Organization,
+  Prisma,
+  Role,
+  StatusProfile,
+  User,
+} from '@prisma/client'
 import { randomUUID } from 'crypto'
 
 import {
@@ -20,6 +27,9 @@ export class InMemoryMembersRepository implements MembersInterface {
       created_at: new Date(),
       updatedAt: new Date(),
       ownerId: randomUUID(),
+      deletedAt: new Date(),
+      archivedAt: new Date(),
+      status: 'ACTIVE',
     },
   ]
 
@@ -27,6 +37,7 @@ export class InMemoryMembersRepository implements MembersInterface {
     {
       id: '12345',
       name: 'carlos',
+      globalRole: 'ADMIN',
       email: '',
       passwordHash: '',
       description: '',
@@ -38,6 +49,40 @@ export class InMemoryMembersRepository implements MembersInterface {
       updatedAt: new Date(),
     },
   ]
+
+  async findMemberByUserId(userId: string, slug: string) {
+    const member = this.items.find((member) => member.userId === userId)
+    const org = this.org.find(
+      (org) => org.slug === slug && org.ownerId === member?.userId,
+    )
+
+    if (!member && !org) {
+      return null
+    }
+
+    return member as MemberDetails
+  }
+
+  async upDateMembers(
+    data: Prisma.MemberUncheckedUpdateInput,
+    memberId: string,
+    organizationId: string,
+  ) {
+    const member = this.items.find((member) => member.id === memberId)
+    const org = this.org.find(
+      (org) => org.id === organizationId && org.id === member?.organizationId,
+    )
+
+    if (member !== undefined) {
+      member.role = data.role as Role
+      member.status_profile = data.status_profile as StatusProfile
+    }
+    if (!member && !org) {
+      return null
+    }
+
+    return member as Member
+  }
 
   async addMembers(data: Prisma.MemberUncheckedCreateInput) {
     const member = {
@@ -69,7 +114,7 @@ export class InMemoryMembersRepository implements MembersInterface {
   async findByMemberId(memberId: string, slug: string) {
     const member = this.items.find((member) => member.id === memberId)
     const org = this.org.find(
-      (org) => org.slug === slug && org.ownerId === member?.userId,
+      (org) => org.slug === slug && org.id === member?.organizationId,
     )
 
     if (!member && !org) {

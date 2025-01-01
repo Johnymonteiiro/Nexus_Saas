@@ -6,7 +6,7 @@ import { MakeCreateOrganizationUseCase } from '@/use-cases/factories/organizatio
 import { MakeGetProfileUserUseCase } from '@/use-cases/factories/users-factories/make-get-profile-user-factory'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
-export async function createOrganization(
+export async function CreateOrganization(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {

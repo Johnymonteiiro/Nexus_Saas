@@ -84,16 +84,19 @@ model Invite {
 }
 
 model Organization {
-  id                        String  @id @default(uuid())
+  id                        String              @id @default(uuid())
   name                      String
-  slug                      String  @unique
-  domain                    String? @unique
+  slug                      String              @unique
+  domain                    String?             @unique
   description               String?
-  shouldAttachUsersByDomain Boolean @default(false) @map("should_attrach_users_by_domain")
-  imageUrl                  String? @map("image_url")
+  shouldAttachUsersByDomain Boolean             @default(false) @map("should_attrach_users_by_domain")
+  imageUrl                  String?             @map("image_url")
+  status                    StatusOrganization? @default(ACTIVE)
 
   created_at DateTime  @default(now())
   updatedAt  DateTime? @updatedAt @map("updated_at")
+  deletedAt DateTime? @updatedAt @map("deleted_at")
+  archivedAt DateTime? @map("archived_at")
 
   projects Project[]
   members  Member[]
@@ -242,6 +245,11 @@ enum StatusBudget {
   INPROGRESS
   PENDENG
   DONE
+}
+
+enum StatusOrganization {
+  ACTIVE
+  ARCHIVED
 }
 
 enum StatusProject {

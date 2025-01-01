@@ -1,10 +1,72 @@
-import { Organization, Prisma } from '@prisma/client'
+import { Organization, Prisma, StatusOrganization } from '@prisma/client'
 import { randomUUID } from 'crypto'
 
-import { OrganizationInterface } from '../Prisma/organizations/organization-interface'
+import {
+  OrganizationDetails,
+  OrganizationInterface,
+} from '../Prisma/organizations/organization-interface'
 
 export class InMemoryOrganizationsRepository implements OrganizationInterface {
   public items: Organization[] = []
+  async findMany(page: number) {
+    const data = this.items
+      .filter((org) => org.status === 'ACTIVE')
+      .slice((page - 1) * 20, page * 20)
+    const organization = data.map((org) => {
+      return {
+        ...org,
+        owner: {
+          name: 'ANA',
+          imageUrl: '',
+          id: org.ownerId,
+        },
+      }
+    })
+    return organization
+  }
+
+  async searchOrganization(query: string) {
+    const organization = this.items.filter(
+      (org) => org.name === query && org.status !== 'ARCHIVED',
+    )
+    return organization
+  }
+
+  async searchArchivedOrganization(query: string) {
+    const organization = this.items.filter(
+      (org) => org.name === query && org.status === 'ARCHIVED',
+    )
+    return organization
+  }
+
+  async findManyArchived(page: number) {
+    const data = this.items
+      .filter((org) => org.status === 'ARCHIVED')
+      .slice((page - 1) * 20, page * 20)
+    const organization = data.map((org) => {
+      return {
+        ...org,
+        owner: {
+          name: 'ANA',
+          imageUrl: '',
+          id: org.ownerId,
+        },
+      }
+    })
+    return organization
+  }
+
+  async archiveOrganizationById(id: string) {
+    const organization = this.items.find((org) => org.id === id)
+
+    if (!organization) {
+      return null
+    }
+
+    organization.status = 'ARCHIVED'
+
+    return organization
+  }
 
   async deleteOrganization(id: string) {
     const index = this.items.findIndex((item) => item.id === id)
@@ -22,16 +84,12 @@ export class InMemoryOrganizationsRepository implements OrganizationInterface {
   async updateOrganization(data: Prisma.OrganizationUpdateInput, id: string) {
     const organization = this.items.find((item) => item.id === id)
     if (organization !== undefined) {
-      organization.id = `${data.id}`
       organization.name = `${data.name}`
-      organization.slug = `${data.slug}`
-      organization.shouldAttachUsersByDomain = true
-      organization.imageUrl = `${data.imageUrl ?? null}`
-      organization.domain = `${data.domain ?? null}`
-      organization.description = `${data.description ?? null}`
-      organization.created_at = data.created_at as Date
-      organization.updatedAt = data.updatedAt as Date
-      organization.ownerId = randomUUID()
+      organization.shouldAttachUsersByDomain =
+        data.shouldAttachUsersByDomain as boolean
+      organization.imageUrl = `${data.imageUrl}`
+      organization.description = `${data.description}`
+      organization.status = data.status as StatusOrganization
     }
 
     return organization as Organization
@@ -48,6 +106,9 @@ export class InMemoryOrganizationsRepository implements OrganizationInterface {
       imageUrl: 'testeImage',
       created_at: new Date(),
       updatedAt: new Date(),
+      archivedAt: new Date(),
+      deletedAt: new Date(),
+      status: 'ACTIVE' as StatusOrganization,
       ownerId: randomUUID(),
       projects: [],
       members: [],
@@ -80,6 +141,6 @@ export class InMemoryOrganizationsRepository implements OrganizationInterface {
       return null
     }
 
-    return organization
+    return organization as OrganizationDetails
   }
 }

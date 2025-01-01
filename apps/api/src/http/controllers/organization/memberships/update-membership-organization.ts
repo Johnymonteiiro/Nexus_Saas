@@ -9,7 +9,7 @@ import { MakeUpdateMemberUseCase } from '@/use-cases/factories/members-factory-f
 import { MakeGetOrganizationUseCase } from '@/use-cases/factories/organization-factory-function/make-get-organization-factory'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
-export async function updateMemberShipOrganization(
+export async function UpdateMemberShipOrganization(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {

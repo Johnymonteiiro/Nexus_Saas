@@ -26,6 +26,6 @@ export interface MembersInterface {
     data: Prisma.MemberUncheckedUpdateInput,
     memberId: string,
     organizationId: string,
-  ): Promise<Member>
+  ): Promise<Member | null>
   searchMember(query: string, slug: string): Promise<MemberDetails[]>
 }

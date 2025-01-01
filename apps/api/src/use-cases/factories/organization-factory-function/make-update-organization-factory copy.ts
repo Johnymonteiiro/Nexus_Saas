@@ -2,10 +2,10 @@ import { PrismaOrganizationRepository } from '@/repositories/Prisma/organization
 import { UpdateOrganizationUseCase } from '@/use-cases/organization-use-case/update-organization-use-case'
 
 export function MakeUpdateOrganizationUseCase() {
-  const organizationsRepository = new PrismaOrganizationRepository() // instance the repository
+  const organizationsRepository = new PrismaOrganizationRepository() 
   const updateOrganizationUpdateUseCase = new UpdateOrganizationUseCase(
     organizationsRepository,
-  ) // instance the users use-case class
+  )
 
   return updateOrganizationUpdateUseCase
 }

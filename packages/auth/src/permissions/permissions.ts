@@ -25,10 +25,7 @@ export const permissions: Record<Roles, PermissiosByRoles> = {
     can('get', ['Customer', 'User', 'Member'])
     cannot(['delete', 'create'], ['Customer', 'User', 'Member'])
 
-    can(['update', 'create'], 'Profile', {
-      ownerId: { $eq: user.id },
-    })
-
+    can(['create'], 'Profile')
     can(['create', 'get'], 'Project')
     can(['update', 'delete'], 'Project', {
       ownerId: { $eq: user.id },
@@ -45,7 +42,7 @@ export const permissions: Record<Roles, PermissiosByRoles> = {
     can('manage', 'Project')
     can('manage', 'Member')
     can('manage', 'Invite')
-    cannot(['transfear_ownership', 'update'], 'Organization')
+    cannot(['transfear_ownership', 'update', 'delete'], 'Organization')
     can(['transfear_ownership', 'update', 'delete'], 'Organization', {
       ownerId: { $eq: user.id },
     })

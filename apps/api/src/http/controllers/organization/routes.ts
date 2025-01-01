@@ -2,11 +2,12 @@ import { FastifyInstance } from 'fastify'
 
 import { verifyJWT } from '@/http/middlewares/verify-jwt'
 
-import { addMemberShipOrganization } from './add-membership-organization'
-import { createOrganization } from './create-organization'
-import { DeleteMembershipOrganization } from './delete-membership-organization'
-import { GetMembershipOrganization } from './get-membership-organization'
-import { SearchMembershipOrganization } from './search-membership-organization'
+import { CreateOrganization } from './create-organization'
+import { AddMemberShipOrganization } from './memberships/add-membership-organization'
+import { DeleteMembershipOrganization } from './memberships/delete-membership-organization'
+import { GetMembershipOrganization } from './memberships/get-membership-organization'
+import { SearchMembershipOrganization } from './memberships/search-membership-organization'
+import { UpdateOrganization } from './update-organization'
 
 export async function organizationRoutes(app: FastifyInstance) {
   app.get(
@@ -24,10 +25,15 @@ export async function organizationRoutes(app: FastifyInstance) {
     { onRequest: [verifyJWT] },
     DeleteMembershipOrganization,
   )
+  app.put(
+    '/organizations/:slug',
+    { onRequest: [verifyJWT] },
+    UpdateOrganization,
+  )
   app.post(
     '/organizations/add/memberships',
     { onRequest: [verifyJWT] },
-    addMemberShipOrganization,
+    AddMemberShipOrganization,
   )
-  app.post('/organizations', { onRequest: [verifyJWT] }, createOrganization)
+  app.post('/organizations', { onRequest: [verifyJWT] }, CreateOrganization)
 }

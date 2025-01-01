@@ -10,7 +10,7 @@ import { MakeGetOrganizationUseCase } from '@/use-cases/factories/organization-f
 import { MakeGetProfileUserUseCase } from '@/use-cases/factories/users-factories/make-get-profile-user-factory'
 import { getUserPermissions } from '@/utils/get-user-permissions'
 
-export async function addMemberShipOrganization(
+export async function AddMemberShipOrganization(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
